@@ -1088,3 +1088,11 @@ select.form-control option {
 .text-muted { color: var(--color-text-muted); }
 .text-center { text-align: center; }
 .font-bold { font-weight: 700; }
+
+.site-footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
