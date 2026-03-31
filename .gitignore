@@ -1,0 +1,16 @@
+# Virtual environment
+.venv/
+
+# Database
+*.db
+
+# Handoff / personal notes
+handoff.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
