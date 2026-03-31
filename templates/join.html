@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}QuizBolt — Join Game{% endblock %}
+
+{% block content %}
+<div class="center">
+  <a href="/" class="logo mb-1">QuizBolt</a>
+  <p class="text-muted mb-3">Enter a room code to join a game</p>
+
+  <div class="card join-form">
+    <div class="form-group">
+      <label for="room-code">Room Code</label>
+      <input
+        type="text"
+        id="room-code"
+        class="form-control"
+        placeholder="e.g. 482917"
+        maxlength="6"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="off"
+        style="font-size:1.6rem; letter-spacing:6px; text-align:center; font-weight:900;"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="nickname">Your Nickname</label>
+      <input
+        type="text"
+        id="nickname"
+        class="form-control"
+        placeholder="e.g. QuizMaster99"
+        maxlength="20"
+        autocomplete="off"
+      />
+    </div>
+
+    <div id="join-error" class="hidden" style="padding:0.6rem 0.9rem; background:rgba(226,27,60,0.2); border:1px solid var(--btn-red); border-radius:var(--radius); font-size:0.9rem; color:#fff;"></div>
+
+    <button class="btn btn--primary btn--large btn--full" id="join-btn">
+      Join Game &rarr;
+    </button>
+
+    <a href="/" class="btn btn--secondary btn--full" style="margin-top:0.5rem;">
+      &larr; Back
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const codeInput = document.getElementById('room-code');
+const nickInput = document.getElementById('nickname');
+const joinBtn   = document.getElementById('join-btn');
+const errorEl   = document.getElementById('join-error');
+
+// Auto-uppercase room code and digits only
+codeInput.addEventListener('input', () => {
+  codeInput.value = codeInput.value.replace(/\D/g, '').slice(0, 6);
+});
+
+function showError(msg) {
+  errorEl.textContent = msg;
+  errorEl.classList.remove('hidden');
+}
+
+function hideError() {
+  errorEl.classList.add('hidden');
+}
+
+joinBtn.addEventListener('click', () => {
+  hideError();
+  const code = codeInput.value.trim();
+  const nick = nickInput.value.trim();
+
+  if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+    showError('Room code must be exactly 6 digits.');
+    codeInput.focus();
+    return;
+  }
+  if (nick.length < 1) {
+    showError('Please enter a nickname.');
+    nickInput.focus();
+    return;
+  }
+  if (nick.length > 20) {
+    showError('Nickname must be 20 characters or less.');
+    nickInput.focus();
+    return;
+  }
+  const safenick = encodeURIComponent(nick);
+  window.location.href = `/play/${code}?nickname=${safenick}`;
+});
+
+// Allow Enter key
+[codeInput, nickInput].forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') joinBtn.click();
+  });
+});
+
+// Auto-focus room code field
+codeInput.focus();
+</script>
+{% endblock %}

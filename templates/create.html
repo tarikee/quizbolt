@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}QuizBolt — Create Quiz{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="padding-top:2rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:1rem;">
+    <a href="/" class="btn btn--secondary btn--icon">&larr; Back</a>
+    <h1 style="font-size:1.8rem;">Create New Quiz</h1>
+  </div>
+
+  <div class="card">
+    <div class="form-group">
+      <label for="quiz-title">Quiz Title</label>
+      <input type="text" id="quiz-title" class="form-control" placeholder="e.g. World History 101" maxlength="120" />
+    </div>
+
+    <hr class="divider">
+
+    <div class="flex align-center justify-between mb-2">
+      <h3>Questions</h3>
+      <button class="btn btn--secondary btn--icon" id="add-question-btn">&#43; Add Question</button>
+    </div>
+
+    <div id="questions-container" class="questions-container"></div>
+
+    <div class="flex gap-2" style="margin-top:1rem;">
+      <button class="btn btn--primary btn--large" id="save-btn" style="flex:1;">
+        &#128190; Save Quiz
+      </button>
+    </div>
+
+    <div id="form-error" class="hidden" style="margin-top:1rem; padding:0.75rem 1rem; background:rgba(226,27,60,0.2); border:1px solid var(--btn-red); border-radius:var(--radius); color:#fff;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/create.js"></script>
+{% endblock %}

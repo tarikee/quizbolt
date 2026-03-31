@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}QuizBolt — Host{% endblock %}
+
+{% block content %}
+<div class="container container--wide" style="padding-top:1.5rem;">
+
+  <!-- Top bar -->
+  <div class="flex align-center justify-between mb-3" style="flex-wrap:wrap; gap:0.75rem;">
+    <a href="/" class="logo" style="font-size:1.6rem;">QuizBolt</a>
+    <div id="host-state-badge" class="badge">Lobby</div>
+  </div>
+
+  <!-- ========== LOBBY PANEL ========== -->
+  <div id="panel-lobby" class="state-panel active">
+    <div class="host-layout">
+      <div>
+        <div class="room-code-display">
+          <div class="room-code-display__label">Room Code</div>
+          <div class="room-code-display__code" id="lobby-room-code">{{ room_code }}</div>
+          <p style="color:var(--color-text-muted); font-size:0.85rem; margin-top:0.4rem;">
+            Players join at <strong style="color:#fff;">quizbolt.local</strong> &rarr; Join Game
+          </p>
+        </div>
+
+        <div class="card">
+          <div id="quiz-title-display" class="font-bold mb-2" style="font-size:1.1rem;"></div>
+          <p class="player-count" id="lobby-player-count">Waiting for players…</p>
+          <div class="player-list-scroll">
+            <div id="player-grid" class="player-grid"></div>
+          </div>
+
+          <hr class="divider">
+
+          <button class="btn btn--primary btn--large btn--full" id="start-btn" disabled>
+            &#9654; Start Game
+          </button>
+          <p class="text-muted text-center mt-1" style="font-size:0.82rem;" id="start-hint">
+            Need at least 1 player to start
+          </p>
+        </div>
+      </div>
+
+      <!-- Right panel: quiz info -->
+      <div class="card" style="text-align:center;">
+        <p class="section-title">Quiz Info</p>
+        <div style="font-size:3rem; margin-bottom:0.5rem;">&#128218;</div>
+        <div id="lobby-question-count" class="font-bold" style="font-size:1.2rem;"></div>
+        <p class="text-muted" style="font-size:0.85rem; margin-top:0.4rem;">questions</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== QUESTION PANEL ========== -->
+  <div id="panel-question" class="state-panel">
+    <div class="host-layout">
+      <div>
+        <!-- Timer -->
+        <div class="flex align-center justify-between mb-1">
+          <span class="question-progress" id="q-progress"></span>
+          <span class="timer-number" id="q-timer">--</span>
+        </div>
+        <div class="timer-wrap mb-2">
+          <div class="timer-bar" id="q-timer-bar"></div>
+        </div>
+
+        <!-- Question text -->
+        <div class="question-text" id="q-text"></div>
+
+        <!-- Answer choices (host sees colored with correct marked) -->
+        <div class="answer-grid" id="q-choices-host"></div>
+
+        <!-- Answer count -->
+        <div class="answer-progress mt-2">
+          <span class="answer-progress__label">Answers</span>
+          <div class="answer-progress__bar-wrap">
+            <div class="answer-progress__bar" id="answer-bar"></div>
+          </div>
+          <span class="answer-progress__count" id="answer-count-label">0 / 0</span>
+        </div>
+
+        <button class="btn btn--danger btn--full mt-2" id="end-q-btn">
+          &#9632; End Question Now
+        </button>
+      </div>
+
+      <!-- Right: live leaderboard placeholder -->
+      <div class="card">
+        <p class="section-title">Players</p>
+        <div id="q-player-count" class="player-count"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== RESULTS PANEL ========== -->
+  <div id="panel-results" class="state-panel">
+    <div class="host-layout">
+      <div>
+        <h2 class="mb-2">Question Results</h2>
+        <div id="results-correct-answer" class="question-text mb-3" style="font-size:1.1rem;"></div>
+        <button class="btn btn--primary btn--large btn--full" id="next-q-btn">
+          Next Question &rarr;
+        </button>
+      </div>
+      <div class="card">
+        <p class="section-title">Leaderboard</p>
+        <div id="results-leaderboard" class="leaderboard"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== GAME OVER PANEL ========== -->
+  <div id="panel-gameover" class="state-panel">
+    <div class="text-center mb-3">
+      <h1 style="font-size:2.5rem;">&#127881; Game Over!</h1>
+    </div>
+    <div id="podium-wrap" class="podium"></div>
+    <div class="card" style="max-width:560px; margin:0 auto;">
+      <p class="section-title text-center mb-2">Final Leaderboard</p>
+      <div id="final-leaderboard" class="leaderboard"></div>
+      <hr class="divider">
+      <a href="/" class="btn btn--primary btn--full btn--large">&#127968; Home</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ROOM_CODE = "{{ room_code }}";
+</script>
+<script src="/static/js/host.js"></script>
+{% endblock %}

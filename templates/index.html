@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}QuizBolt — Home{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero" style="padding-top:3rem;">
+    <a href="/" class="logo">QuizBolt</a>
+    <p class="logo-sub">Live Quiz Game Platform</p>
+    <div class="hero-actions mt-2">
+      <a href="/create" class="btn btn--primary btn--large">
+        <span>&#43;</span> Create Quiz
+      </a>
+      <a href="/join" class="btn btn--secondary btn--large">
+        &#9654; Join Game
+      </a>
+    </div>
+  </div>
+
+  <!-- Quiz library -->
+  <div class="card">
+    <div class="flex align-center justify-between mb-2">
+      <h2>Your Quizzes</h2>
+      <span class="badge" id="quiz-count">Loading…</span>
+    </div>
+
+    <div id="quiz-list" class="quiz-list">
+      <div class="empty-state">
+        <div class="spinner" style="margin:0 auto 1rem;"></div>
+        Loading quizzes…
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const toast = document.getElementById('toast');
+function showToast(msg, duration = 2500) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+async function loadQuizzes() {
+  const listEl = document.getElementById('quiz-list');
+  const countEl = document.getElementById('quiz-count');
+  try {
+    const res = await fetch('/api/quizzes');
+    const quizzes = await res.json();
+    countEl.textContent = `${quizzes.length} quiz${quizzes.length !== 1 ? 'zes' : ''}`;
+    if (quizzes.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          No quizzes yet. <a href="/create" style="color:var(--color-accent-bright);">Create one!</a>
+        </div>`;
+      return;
+    }
+    listEl.innerHTML = quizzes.map(q => `
+      <div class="quiz-item" id="quiz-${q.id}">
+        <div class="quiz-item__info">
+          <div class="quiz-item__title">${escHtml(q.title)}</div>
+          <div class="quiz-item__meta">
+            ${q.question_count} question${q.question_count !== 1 ? 's' : ''}
+            &nbsp;&middot;&nbsp;
+            ${formatDate(q.created_at)}
+          </div>
+        </div>
+        <div class="quiz-item__actions">
+          <button class="btn btn--success btn--icon" onclick="hostQuiz('${q.id}')">
+            &#9654; Host
+          </button>
+          <button class="btn btn--danger btn--icon" onclick="deleteQuiz('${q.id}', '${escHtml(q.title)}')">
+            &#128465;
+          </button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    listEl.innerHTML = `<div class="empty-state">Failed to load quizzes.</div>`;
+  }
+}
+
+async function hostQuiz(quizId) {
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.textContent = 'Starting…';
+  try {
+    const res = await fetch('/api/games', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quiz_id: quizId }),
+    });
+    if (!res.ok) throw new Error('Failed to create game');
+    const { room_code } = await res.json();
+    window.location.href = `/host/${room_code}`;
+  } catch (e) {
+    showToast('Could not start game. Try again.');
+    btn.disabled = false;
+    btn.innerHTML = '&#9654; Host';
+  }
+}
+
+async function deleteQuiz(quizId, title) {
+  if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+  try {
+    const res = await fetch(`/api/quizzes/${quizId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error();
+    document.getElementById(`quiz-${quizId}`)?.remove();
+    const remaining = document.querySelectorAll('.quiz-item').length;
+    document.getElementById('quiz-count').textContent =
+      `${remaining} quiz${remaining !== 1 ? 'zes' : ''}`;
+    if (remaining === 0) {
+      document.getElementById('quiz-list').innerHTML =
+        `<div class="empty-state">No quizzes yet. <a href="/create" style="color:var(--color-accent-bright);">Create one!</a></div>`;
+    }
+    showToast('Quiz deleted.');
+  } catch {
+    showToast('Failed to delete quiz.');
+  }
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+}
+
+loadQuizzes();
+</script>
+{% endblock %}

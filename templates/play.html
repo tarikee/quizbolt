@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}QuizBolt — Playing{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:640px; padding-top:1.5rem;">
+
+  <!-- Top bar -->
+  <div class="flex align-center justify-between mb-3">
+    <span class="logo" style="font-size:1.4rem; pointer-events:none;">QuizBolt</span>
+    <div>
+      <span class="badge" id="nickname-badge">{{ nickname }}</span>
+      <span class="badge" style="margin-left:0.4rem;" id="score-badge">0 pts</span>
+    </div>
+  </div>
+
+  <!-- ========== WAITING PANEL ========== -->
+  <div id="panel-waiting" class="state-panel active">
+    <div class="card waiting-screen">
+      <div class="spinner"></div>
+      <h2>You're in!</h2>
+      <p class="text-muted">Waiting for the host to start the game…</p>
+      <div style="font-size:2rem; margin-top:0.5rem;">
+        <span style="color:var(--color-accent-bright); font-weight:900;">{{ room_code }}</span>
+      </div>
+      <p class="text-muted" style="font-size:0.85rem;">Room Code</p>
+    </div>
+  </div>
+
+  <!-- ========== QUESTION PANEL ========== -->
+  <div id="panel-question" class="state-panel">
+    <!-- Progress + timer number -->
+    <div class="flex align-center justify-between mb-1">
+      <span class="question-progress" id="q-progress"></span>
+      <span class="timer-number" id="q-timer">--</span>
+    </div>
+    <!-- Timer bar -->
+    <div class="timer-wrap mb-2">
+      <div class="timer-bar" id="q-timer-bar"></div>
+    </div>
+    <!-- Question text -->
+    <div class="question-text" id="q-text"></div>
+    <!-- Answer buttons -->
+    <div class="answer-grid" id="q-choices"></div>
+  </div>
+
+  <!-- ========== ANSWER FEEDBACK PANEL ========== -->
+  <div id="panel-result" class="state-panel">
+    <div id="result-content"></div>
+    <div class="card mt-3 text-center">
+      <div class="spinner" style="margin:0 auto;"></div>
+      <p class="text-muted mt-2">Waiting for next question…</p>
+    </div>
+  </div>
+
+  <!-- ========== GAME OVER PANEL ========== -->
+  <div id="panel-gameover" class="state-panel">
+    <div class="card text-center">
+      <div style="font-size:3rem; margin-bottom:0.5rem;">&#127881;</div>
+      <h1 class="mb-1">Game Over!</h1>
+      <p class="text-muted mb-3">Thanks for playing, <strong style="color:#fff;">{{ nickname }}</strong>!</p>
+      <div id="my-final-score" class="mb-3"
+           style="font-size:2.5rem; font-weight:900; color:var(--color-accent-bright);"></div>
+
+      <hr class="divider">
+      <p class="section-title mb-2">Final Leaderboard</p>
+      <div id="final-leaderboard" class="leaderboard mb-3"></div>
+      <a href="/join" class="btn btn--primary btn--full btn--large">Play Again</a>
+    </div>
+  </div>
+
+  <!-- ========== ERROR PANEL ========== -->
+  <div id="panel-error" class="state-panel">
+    <div class="card text-center">
+      <div style="font-size:3rem; margin-bottom:0.5rem;">&#9888;</div>
+      <h2 class="mb-2" id="error-title">Connection Error</h2>
+      <p class="text-muted mb-3" id="error-message">Something went wrong.</p>
+      <a href="/join" class="btn btn--primary btn--full">Try Again</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ROOM_CODE = "{{ room_code }}";
+  const NICKNAME  = "{{ nickname }}";
+</script>
+<script src="/static/js/player.js"></script>
+{% endblock %}
